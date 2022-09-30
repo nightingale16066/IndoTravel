@@ -1,0 +1,136 @@
+const reservationForm = document.querySelector('.reservation__form');
+const footerForm = document.querySelector('.footer__form');
+const closeBtnOk = document.querySelector('.btn__ok');
+const closeBtnErr = document.querySelector('.btn__error');
+const URL = 'https://jsonplaceholder.typicode.com/posts'
+
+const httpRequest = (url, {
+  method = 'GET',
+  callback,
+  body,
+  headers,
+}) => {
+  try {
+    const xhr = new XMLHttpRequest();
+    xhr.open(method, url);
+  
+    if (headers) {
+      for (const [key, value] of Object.entries(headers)) {
+        xhr.setRequestHeader(key, value)
+      }
+    }
+  
+    xhr.addEventListener('load', () => {
+      if (xhr.status < 200 || xhr.status >= 300) {
+        callback(new Error(xhr.status), xhr.response);
+        return;
+      }
+      const data = JSON.parse(xhr.response);
+      if (callback) callback(null, data);
+    })
+  
+    xhr.addEventListener('error', () => {
+      callback(new Error(xhr.status), xhr.response)
+    })
+  
+    xhr.send(JSON.stringify(body));
+  } catch (error) {
+    callback(new Error(err))
+  }
+}
+
+const fetchRequest = async (url, {
+  method = 'GET',
+  callback,
+  body,
+  headers,
+}) => {
+  try {
+    const options = {
+      method,
+    } 
+
+    if (body) options.body = JSON.stringify(body);
+    if (headers) options.headers = headers;
+
+    const response = await fetch(url, options);
+
+    if (response.ok) {
+      const data = await response.json();
+      if (callback) callback(null, data);
+      return;
+    }
+
+    throw new Error(response.status);
+
+  } catch (error) {
+    callback(error)
+  }
+}
+
+const closeMod = (btn, modal) => {
+  btn.addEventListener('click', () => {
+    modal.classList.remove('active__modal')
+  })
+}
+const clearForm = (reservationForm) => {
+  reservationForm.reset()
+  reservationForm.querySelector('.reservation__data').textContent = '';
+  reservationForm.querySelector('.reservation__price').textContent = '';
+}
+
+reservationForm.addEventListener('submit', (e) => {
+  e.preventDefault()
+  fetchRequest(URL, {
+    method: 'POST',
+    body: {
+      dates: reservationForm.dates.value,
+      people: reservationForm.people.value,
+      reservation__name: reservationForm.reservation__name.value,
+      reservation__phone: reservationForm.reservation__name.value,
+    },
+    callback(err, data) {
+      if (err) {
+        const errorModal = document.querySelector('.overlay__error');
+        errorModal.classList.add('active__modal');
+        clearForm(reservationForm);
+        closeMod(closeBtnErr ,errorModal);
+        return;
+      }
+      const okModal = document.querySelector('.overlay__ok');
+      okModal.classList.add('active__modal')
+      clearForm(reservationForm);
+      closeMod(closeBtnOk ,okModal);
+    },
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+
+})
+
+footerForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  fetchRequest(URL, {
+    method: 'POST',
+    body: {
+      email: footerForm.email.value,
+    },
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    callback(err) {
+      const footerTitle = footerForm.querySelector('.footer__title');
+      const footerText = footerForm.querySelector('.footer__text');
+      if (err) {
+        footerTitle.textContent = 'Упс... Что-то пошло не так';
+        footerText.textContent = 'Не удалось отправить заявку. Пожалуйста, повторите отправку еще раз';
+        return;
+      }
+      footerTitle.textContent = 'Ваша заявка успешно отправлена';
+      footerText.textContent = 'Наши менеджеры свяжутся с вами в течении 3-х рабочих дней';
+      footerForm.querySelector('.footer__input-wrap').style.display = 'none';
+    }
+  })
+})
+
