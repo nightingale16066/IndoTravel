@@ -34,7 +34,7 @@ const addOptionsPeople = (elem, value) => {
   }
 }
 
-const prepareString = (amount) => {
+export const prepareString = (amount) => {
   const words = ['человек', 'человека'];
   let word;
 

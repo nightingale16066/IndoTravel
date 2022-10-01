@@ -1,7 +1,10 @@
+import showModal from "./showModal.js";
+
 const reservationForm = document.querySelector('.reservation__form');
+const reservationPrice = document.querySelector('.reservation__price');
 const footerForm = document.querySelector('.footer__form');
 const closeBtnOk = document.querySelector('.btn__ok');
-const closeBtnErr = document.querySelector('.btn__error');
+const closeBtnErr = document.querySelector('.my_btn__error');
 const URL = 'https://jsonplaceholder.typicode.com/posts'
 
 const httpRequest = (url, {
@@ -70,7 +73,7 @@ const fetchRequest = async (url, {
 
 const closeMod = (btn, modal) => {
   btn.addEventListener('click', () => {
-    modal.classList.remove('active__modal')
+    modal.classList.remove('my_active__modal')
   })
 }
 const clearForm = (reservationForm) => {
@@ -79,34 +82,37 @@ const clearForm = (reservationForm) => {
   reservationForm.querySelector('.reservation__price').textContent = '';
 }
 
-reservationForm.addEventListener('submit', (e) => {
-  e.preventDefault()
-  fetchRequest(URL, {
-    method: 'POST',
-    body: {
-      dates: reservationForm.dates.value,
-      people: reservationForm.people.value,
-      reservation__name: reservationForm.reservation__name.value,
-      reservation__phone: reservationForm.reservation__name.value,
-    },
-    callback(err, data) {
-      if (err) {
-        const errorModal = document.querySelector('.overlay__error');
-        errorModal.classList.add('active__modal');
-        clearForm(reservationForm);
-        closeMod(closeBtnErr ,errorModal);
-        return;
+reservationForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const confirm = await showModal(reservationForm, reservationPrice);
+  if (confirm) {
+    fetchRequest(URL, {
+      method: 'POST',
+      body: {
+        dates: reservationForm.dates.value,
+        people: reservationForm.people.value,
+        reservation__name: reservationForm.reservation__name.value,
+        reservation__phone: reservationForm.reservation__phone.value,
+      },
+      callback(err, data) {
+        if (err) {
+          const errorModal = document.querySelector('.overlay__error');
+          errorModal.classList.add('my_active__modal');
+          clearForm(reservationForm);
+          closeMod(closeBtnErr ,errorModal);
+          return;
+        }
+        reservationForm.dates.disabled = true;
+        reservationForm.people.disabled = true;
+        reservationForm.reservation__name.disabled = true;
+        reservationForm.reservation__phone.disabled = true;
+        document.querySelector('.reservation__button').disabled = true;
+      },
+      headers: {
+        'Content-Type': 'application/json'
       }
-      const okModal = document.querySelector('.overlay__ok');
-      okModal.classList.add('active__modal')
-      clearForm(reservationForm);
-      closeMod(closeBtnOk ,okModal);
-    },
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-
+    });
+  }
 })
 
 footerForm.addEventListener('submit', (e) => {

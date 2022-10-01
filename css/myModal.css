@@ -1,0 +1,51 @@
+.my_overlay {
+  opacity: 0;
+  visibility: hidden;
+  
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .5);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.my_active__modal {
+  opacity: 1;
+  visibility: visible;
+}
+.my_modal__content {
+  background: #FFFFFF;
+  border: 1px solid #AFAFAF;
+  border-radius: 30px;
+  padding: 30px 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.my_modal__title {
+  font-size: 34px;
+  line-height: 150%;
+  text-align: center;
+  letter-spacing: 0.02em;
+  color: #303030;
+  margin-bottom: 10px;
+}
+.my_modal__text {
+  font-size: 18px;
+  line-height: 150%;
+  color: #303030;
+  text-align: center;
+  margin-bottom: 14px;
+}
+.my_btn__error {
+  background: #FCB500;
+  border-radius: 12px;
+  padding: 24px 110px;
+}
+.my_btn {
+  cursor: pointer;
+}

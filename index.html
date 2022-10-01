@@ -11,7 +11,7 @@
   <link rel="icon" type="image/png" href="img/favicon.png">
   <link rel="stylesheet" href="css/index.css">
   <link rel="stylesheet" href="css/timer.css">
-  <link rel="stylesheet" href="css/modal.css">
+  <link rel="stylesheet" href="css/myModal.css">
   <script src="./js/index.js" type="module"></script>
   <title>Indonesia</title>
 </head>
@@ -241,12 +241,12 @@
           <div class="reservation__inputs">
             <div class="reservation__selects">
               <label class="reservation__select-wrapper reservation__select-wrapper_date">
-                <select name="dates" id="reservation__date" class="reservation__select">
+                <select name="dates" id="reservation__date" class="reservation__select" required>
                   <option value="" class="tour__option">Дата путешествия</option>
                 </select>
               </label>
               <label class="reservation__select-wrapper reservation__select-wrapper_people">
-                <select name="people" id="reservation__people" class="reservation__select">
+                <select name="people" id="reservation__people" class="reservation__select" required>
                   <option value="" class="tour__option reservation__option">Количество человек</option>
                 </select>
               </label>
@@ -255,11 +255,11 @@
           <div class="reservation__contacts">
             <div class="reservation__input-wrap">
               <label for="reservation__name" class="reservation__label">ФИО</label>
-              <input required type="text" class="reservation__input reservation__input_name" name="reservation__name" id="reservation__name" placeholder="Введите ваше ФИО">
+              <input required type="text" class="reservation__input reservation__input_name" name="reservation__name" id="reservation__name" placeholder="Введите ваше ФИО" required>
             </div>
             <div class="reservation__input-wrap">
               <label for="reservation__phone" class="reservation__label">Телефон</label>
-              <input required type="text" class="reservation__input" name="reservation__phone" id="reservation__phone" placeholder="Введите номер телефона">
+              <input required type="text" class="reservation__input" name="reservation__phone" id="reservation__phone" placeholder="Введите номер телефона" required>
             </div>
           </div>
           <div class="reservation__bottom">
@@ -329,18 +329,11 @@
       </div>
     </div>
   </footer>
-  <div class="overlay overlay__ok">
-    <div class="modal__content">
-      <div class="modal__title">Ваша заявка успешно отправлена</div>
-      <div class="modal__text">Наши менеджеры свяжутся с вами в течении 3-х рабочих дней</div>
-      <div class="btn btn__ok"><img src="./img/Ok.svg" alt=""></div>
-    </div>
-  </div>
-  <div class="overlay overlay__error">
-    <div class="modal__content">
-      <div class="modal__title">Упс... Что-то пошло не так</div>
-      <div class="modal__text">Не удалось отправить заявку. Пожалуйста, повторите отправку еще раз</div>
-      <div class="btn__error btn">Забронировать</div>
+  <div class="my_overlay overlay__error">
+    <div class="my_modal__content">
+      <div class="my_modal__title">Упс... Что-то пошло не так</div>
+      <div class="my_modal__text">Не удалось отправить заявку. Пожалуйста, повторите отправку еще раз</div>
+      <div class="my_btn__error my_btn">Забронировать</div>
     </div>
   </div>
 </body>
