@@ -2,6 +2,10 @@ import showModal from "./showModal.js";
 
 const reservationForm = document.querySelector('.reservation__form');
 const reservationPrice = document.querySelector('.reservation__price');
+
+const reservationName = document.getElementById('reservation__name');
+const reservationPhone = document.getElementById('reservation__phone');
+
 const footerForm = document.querySelector('.footer__form');
 const closeBtnOk = document.querySelector('.btn__ok');
 const closeBtnErr = document.querySelector('.my_btn__error');
@@ -82,8 +86,24 @@ const clearForm = (reservationForm) => {
   reservationForm.querySelector('.reservation__price').textContent = '';
 }
 
+reservationName.addEventListener('input', () => {
+  reservationName.value = reservationName.value.replace(/[^А-Яа-яЁё ]/g, '')
+})
+
+reservationPhone.addEventListener('input', () => {
+  if (reservationPhone.value.length <= 1) {
+    reservationPhone.value = reservationPhone.value.replace(/[^+\d]/, '')
+  } else if (/^\+/.test(reservationPhone.value)) {
+    reservationPhone.value = reservationPhone.value[0] + reservationPhone.value.replace(/[^\d]/g, '')
+  } else {
+    reservationPhone.value = reservationPhone.value.replace(/[^\d]/, '');
+  }
+})
+
 reservationForm.addEventListener('submit', async (e) => {
   e.preventDefault();
+  if (!/(.+\s){2}(.+\s?)+/.test(reservationName.value)) return;
+  
   const confirm = await showModal(reservationForm, reservationPrice);
   if (confirm) {
     fetchRequest(URL, {
