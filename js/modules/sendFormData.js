@@ -87,53 +87,82 @@ const clearForm = (reservationForm) => {
 }
 
 reservationName.addEventListener('input', () => {
-  reservationName.value = reservationName.value.replace(/[^А-Яа-яЁё ]/g, '')
-})
+  reservationName.value = reservationName.value.replace(/[^А-Яа-яЁё ]/g, '');
+});
 
-reservationPhone.addEventListener('input', () => {
-  if (reservationPhone.value.length <= 1) {
-    reservationPhone.value = reservationPhone.value.replace(/[^+\d]/, '')
-  } else if (/^\+/.test(reservationPhone.value)) {
-    reservationPhone.value = reservationPhone.value[0] + reservationPhone.value.replace(/[^\d]/g, '')
-  } else {
-    reservationPhone.value = reservationPhone.value.replace(/[^\d]/, '');
-  }
-})
+const phoneMask = new Inputmask('+7 (999)-999-99-99');
+phoneMask.mask(reservationPhone);
 
-reservationForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  if (!/(.+\s){2}(.+\s?)+/.test(reservationName.value)) return;
-  
-  const confirm = await showModal(reservationForm, reservationPrice);
-  if (confirm) {
-    fetchRequest(URL, {
-      method: 'POST',
-      body: {
-        dates: reservationForm.dates.value,
-        people: reservationForm.people.value,
-        reservation__name: reservationForm.reservation__name.value,
-        reservation__phone: reservationForm.reservation__phone.value,
+
+const justValidate = new JustValidate(reservationForm);
+justValidate
+  .addField('#reservation__name', [
+    {
+      rule: 'required',
+      errorMessage: 'Укажите ваше имя'
+    },
+    {
+      rule : 'customRegexp',
+      value: /([a-zа-я]+\s){2}([a-zа-я]+\s?)+/,
+      errorMessage: 'Введите полное имя'
+    }
+  ])
+  .addField('#reservation__phone', [
+    {
+      rule: 'required',
+      errorMessage: 'Укажите ваш телефон'
+    },
+    {
+      validator(value) {
+        const phone = reservationPhone.inputmask.unmaskedvalue();
+        return !!(Number(phone) && phone.length === 10);
       },
-      callback(err, data) {
-        if (err) {
-          const errorModal = document.querySelector('.overlay__error');
-          errorModal.classList.add('my_active__modal');
-          clearForm(reservationForm);
-          closeMod(closeBtnErr ,errorModal);
-          return;
+      errorMessage: 'Телефон некорректен!'
+    },
+  ])
+  .addField('#reservation__date', [
+    {
+      rule: 'required',
+      errorMessage: 'Выберите дату путешествия'
+    }
+  ])
+  .addField('#reservation__people', [
+    {
+      rule: 'required',
+      errorMessage: 'Укажите количество человек'
+    }
+  ])
+  .onSuccess(async event => {
+    const confirm = await showModal(reservationForm, reservationPrice);
+    if (confirm) {
+      fetchRequest(URL, {
+        method: 'POST',
+        body: {
+          dates: reservationForm.dates.value,
+          people: reservationForm.people.value,
+          reservation__name: reservationForm.reservation__name.value,
+          reservation__phone: reservationPhone.inputmask.unmaskedvalue(),
+        },
+        callback(err, data) {
+          if (err) {
+            const errorModal = document.querySelector('.overlay__error');
+            errorModal.classList.add('my_active__modal');
+            clearForm(reservationForm);
+            closeMod(closeBtnErr ,errorModal);
+            return;
+          }
+          reservationForm.dates.disabled = true;
+          reservationForm.people.disabled = true;
+          reservationForm.reservation__name.disabled = true;
+          reservationForm.reservation__phone.disabled = true;
+          document.querySelector('.reservation__button').disabled = true;
+        },
+        headers: {
+          'Content-Type': 'application/json'
         }
-        reservationForm.dates.disabled = true;
-        reservationForm.people.disabled = true;
-        reservationForm.reservation__name.disabled = true;
-        reservationForm.reservation__phone.disabled = true;
-        document.querySelector('.reservation__button').disabled = true;
-      },
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-  }
-})
+      });
+    }
+  });
 
 footerForm.addEventListener('submit', (e) => {
   e.preventDefault();

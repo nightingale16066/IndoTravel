@@ -4,3 +4,4 @@ import './modules/burger.js';
 import './modules/fly.js';
 import './modules/fetchData.js';
 import './modules/sendFormData.js';
+import './modules/swiper.js'
